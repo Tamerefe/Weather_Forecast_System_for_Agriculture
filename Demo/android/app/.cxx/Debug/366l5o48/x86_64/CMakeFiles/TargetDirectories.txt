@@ -1,0 +1,2 @@
+C:/Users/polis/Desktop/farmweatherapp/android/app/.cxx/Debug/366l5o48/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/polis/Desktop/farmweatherapp/android/app/.cxx/Debug/366l5o48/x86_64/CMakeFiles/rebuild_cache.dir
