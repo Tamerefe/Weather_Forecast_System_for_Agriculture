@@ -90,3 +90,8 @@ pubspec.lock  # Genellikle paylaşılır, ancak bazı ekipler bunu hariç tutar
 
 # Linux
 /linux/flutter/ephemeral/
+
+# Keys
+.env
+
+/build
