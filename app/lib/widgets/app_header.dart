@@ -1,7 +1,38 @@
 import 'package:flutter/material.dart';
+import '../pages/profile_page.dart';
+import '../services/notification_page.dart';
 
 class AppHeader extends StatelessWidget {
-  const AppHeader({super.key});
+  final Widget? leading;
+  final Widget? trailing;
+  final String? title;
+
+  const AppHeader({
+    Key? key,
+    this.leading,
+    this.trailing,
+    this.title,
+  }) : super(key: key);
+
+  void _onSearchTap(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Search tapped")),
+    );
+  }
+
+  void _onProfileTap(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ProfilePage()),
+    );
+  }
+
+  void _onNotificationTap(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const NotificationPage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,27 +60,30 @@ class AppHeader extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Container(
-                  height: 45,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: "Search here ...",
-                              border: InputBorder.none,
-                              hintStyle: TextStyle(color: Colors.grey),
+                child: GestureDetector(
+                  onTap: () => _onSearchTap(context),
+                  child: Container(
+                    height: 45,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              decoration: InputDecoration(
+                                hintText: "Search here ...",
+                                border: InputBorder.none,
+                                hintStyle: TextStyle(color: Colors.grey),
+                              ),
                             ),
                           ),
-                        ),
-                        Icon(Icons.search, color: Colors.grey),
-                      ],
+                          Icon(Icons.search, color: Colors.grey),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -61,22 +95,25 @@ class AppHeader extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Row(
             children: [
-              const CircleAvatar(
-                radius: 20,
-                backgroundImage: AssetImage('assets/profile.png'),
+              GestureDetector(
+                onTap: () => _onProfileTap(context),
+                child: const CircleAvatar(
+                  radius: 20,
+                  backgroundImage: AssetImage('assets/profile.png'),
+                ),
               ),
               const SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
+                children: const [
+                  Text(
                     "Good Morning!",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                     ),
                   ),
-                  const Text(
+                  Text(
                     "Tamer Akipek",
                     style: TextStyle(
                       color: Colors.white,
@@ -87,33 +124,36 @@ class AppHeader extends StatelessWidget {
                 ],
               ),
               const Spacer(),
-              Stack(
-                children: [
-                  const Icon(Icons.notifications,
-                      color: Colors.green, size: 30),
-                  Positioned(
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: const BoxConstraints(
-                        minWidth: 16,
-                        minHeight: 16,
-                      ),
-                      child: const Text(
-                        '1',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
+              GestureDetector(
+                onTap: () => _onNotificationTap(context),
+                child: Stack(
+                  children: [
+                    const Icon(Icons.notifications,
+                        color: Colors.green, size: 30),
+                    Positioned(
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
                         ),
-                        textAlign: TextAlign.center,
+                        constraints: const BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: const Text(
+                          '1',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
