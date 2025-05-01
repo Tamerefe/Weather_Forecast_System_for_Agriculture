@@ -71,6 +71,9 @@ class _ProfilePageState extends State<ProfilePage>
     setState(() => _isRefreshing = true);
     // Simulate network request
     await Future.delayed(const Duration(seconds: 2));
+
+    if (!mounted) return; // Add mounted check after async gap
+
     setState(() => _isRefreshing = false);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Profile updated!")),
@@ -111,10 +114,6 @@ class _ProfilePageState extends State<ProfilePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Profile"),
-        backgroundColor: Colors.green,
-      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -334,8 +333,8 @@ class _ProfilePageState extends State<ProfilePage>
     return InkWell(
       onTap: () => _onSettingTap(context, text),
       borderRadius: BorderRadius.circular(8),
-      splashColor: Colors.green.withOpacity(0.3),
-      highlightColor: Colors.green.withOpacity(0.1),
+      splashColor: Color.fromARGB(77, 76, 175, 80), // 30% opacity green
+      highlightColor: Color.fromARGB(26, 76, 175, 80), // 10% opacity green
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
@@ -413,7 +412,7 @@ class _ProfilePageState extends State<ProfilePage>
     return InkWell(
       onTap: () => _showStatDetail(label, value),
       borderRadius: BorderRadius.circular(8),
-      splashColor: Colors.green.withOpacity(0.3),
+      splashColor: Color.fromARGB(77, 76, 175, 80), // 30% opacity green
       child: Column(
         children: [
           Text(value,

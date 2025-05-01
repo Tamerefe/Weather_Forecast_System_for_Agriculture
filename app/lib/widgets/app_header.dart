@@ -8,11 +8,11 @@ class AppHeader extends StatelessWidget {
   final String? title;
 
   const AppHeader({
-    Key? key,
+    super.key,
     this.leading,
     this.trailing,
     this.title,
-  }) : super(key: key);
+  });
 
   void _onSearchTap(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -47,7 +47,7 @@ class AppHeader extends StatelessWidget {
                 height: 50,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.9),
+                  color: Color.fromRGBO(255, 255, 255, 0.9),
                 ),
                 child: Center(
                   child: Image.asset(

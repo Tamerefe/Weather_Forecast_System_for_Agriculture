@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:logger/logger.dart';
+
+final logger = Logger();
 
 class WeatherService {
   final String apiKey = dotenv.env['API_KEY'] ?? '';
@@ -8,7 +11,7 @@ class WeatherService {
 
   Future<Map<String, dynamic>> getWeather(String city) async {
     if (apiKey.isEmpty) {
-      print('⚠️ API anahtarı .env dosyasında bulunamadı');
+      logger.i('⚠️ API anahtarı .env dosyasında bulunamadı');
       return {
         'temp': 'N/A',
         'humidity': 'N/A',
@@ -27,8 +30,8 @@ class WeatherService {
         },
       );
 
-      print('🔵 Durum kodu: ${response.statusCode}');
-      print(
+      logger.i('🔵 Durum kodu: ${response.statusCode}');
+      logger.i(
           '📦 İçerik: ${response.body.substring(0, min(200, response.body.length))}...');
 
       if (response.statusCode == 200) {
@@ -36,7 +39,7 @@ class WeatherService {
 
         // API yanıtı doğrulama
         if (data == null) {
-          print('⚠️ API boş yanıt döndürdü');
+          logger.i('⚠️ API boş yanıt döndürdü');
           return {
             'temp': 'N/A',
             'humidity': 'N/A',
@@ -45,7 +48,7 @@ class WeatherService {
         }
 
         if (data['main'] == null) {
-          print('⚠️ API yanıtında "main" verisi yok: ${response.body}');
+          logger.i('⚠️ API yanıtında "main" verisi yok: ${response.body}');
           return {
             'temp': 'N/A',
             'humidity': 'N/A',
@@ -66,18 +69,18 @@ class WeatherService {
           'wind': wind?.toString() ?? 'N/A',
         };
       } else if (response.statusCode == 401) {
-        print('⚠️ Geçersiz API anahtarı veya yetkilendirme hatası');
+        logger.i('⚠️ Geçersiz API anahtarı veya yetkilendirme hatası');
         throw Exception('Geçersiz API anahtarı veya yetkilendirme hatası');
       } else if (response.statusCode == 404) {
-        print('⚠️ Şehir bulunamadı: $city');
+        logger.i('⚠️ Şehir bulunamadı: $city');
         throw Exception('Şehir bulunamadı: $city');
       } else {
-        print('⚠️ Hata: ${response.statusCode} - ${response.body}');
+        logger.i('⚠️ Hata: ${response.statusCode} - ${response.body}');
         throw Exception(
             'Hava durumu verileri yüklenemedi: ${response.statusCode}');
       }
     } catch (e) {
-      print('⚠️ getWeather\'da hata yakalandı: $e');
+      logger.i('⚠️ getWeather\'da hata yakalandı: $e');
       return {
         'temp': 'Hata',
         'humidity': 'N/A',
@@ -91,7 +94,7 @@ class WeatherService {
       final weather = await getWeather(city);
       return "$city: ${weather['temp']}°C";
     } catch (e) {
-      print('❌ getTemperature Hatası: $e');
+      logger.i('❌ getTemperature Hatası: $e');
       return "$city: Hata";
     }
   }

@@ -15,7 +15,7 @@ class _WeatherPageState extends State<WeatherPage> {
   final Map<DateTime, List<String>> _events = {};
 
   void _addEvent(BuildContext context) async {
-    final TextEditingController _controller = TextEditingController();
+    final TextEditingController controller = TextEditingController();
     if (_selectedDay == null) return;
 
     await showDialog(
@@ -23,7 +23,7 @@ class _WeatherPageState extends State<WeatherPage> {
       builder: (context) => AlertDialog(
         title: const Text("Add Event"),
         content: TextField(
-          controller: _controller,
+          controller: controller,
           decoration: const InputDecoration(
               hintText: "Enter event (e.g., Harvest, Prune)"),
         ),
@@ -34,7 +34,7 @@ class _WeatherPageState extends State<WeatherPage> {
           ),
           ElevatedButton(
             onPressed: () {
-              final text = _controller.text.trim();
+              final text = controller.text.trim();
               if (text.isNotEmpty) {
                 setState(() {
                   _events[_selectedDay!] = [...?_events[_selectedDay!], text];
@@ -340,8 +340,8 @@ class _WeatherPageState extends State<WeatherPage> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: data['day'] == 'Today'
-                          ? Colors.green.withOpacity(0.8)
-                          : Colors.white.withOpacity(0.4),
+                          ? const Color.fromRGBO(76, 175, 80, 0.8)
+                          : Color.fromRGBO(255, 255, 255, 0.4),
                       borderRadius: BorderRadius.circular(12),
                       border: data['day'] == 'Today'
                           ? Border.all(color: Colors.lightGreenAccent, width: 2)
