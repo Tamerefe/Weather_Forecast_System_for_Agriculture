@@ -12,45 +12,156 @@ class WeatherPage extends StatefulWidget {
 class _WeatherPageState extends State<WeatherPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  final Map<DateTime, List<String>> _events = {};
+  // Updated events structure to store more information
+  final Map<DateTime, List<Map<String, dynamic>>> _events = {};
+  bool _isRefreshing = false;
 
   void _addEvent(BuildContext context) async {
-    final TextEditingController controller = TextEditingController();
-    if (_selectedDay == null) return;
+    final TextEditingController titleController = TextEditingController();
+    final TextEditingController notesController = TextEditingController();
+
+    if (_selectedDay == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select a day first")),
+      );
+      return;
+    }
+
+    // Default values
+    String selectedCategory = 'Harvest';
+    TimeOfDay selectedTime = TimeOfDay.now();
 
     await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Add Event"),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-              hintText: "Enter event (e.g., Harvest, Prune)"),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text("Add Farm Event"),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Event title
+                TextField(
+                  controller: titleController,
+                  decoration: const InputDecoration(
+                    labelText: "Event Title",
+                    hintText: "Enter event title",
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Category dropdown
+                DropdownButtonFormField<String>(
+                  value: selectedCategory,
+                  decoration: const InputDecoration(
+                    labelText: "Category",
+                  ),
+                  items: [
+                    'Harvest',
+                    'Planting',
+                    'Pruning',
+                    'Fertilizing',
+                    'Irrigation',
+                    'Pest Control',
+                    'Other'
+                  ]
+                      .map((category) => DropdownMenuItem(
+                            value: category,
+                            child: Text(category),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        selectedCategory = value;
+                      });
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // Time picker
+                ListTile(
+                  title: const Text("Time"),
+                  subtitle: Text(selectedTime.format(context)),
+                  trailing: const Icon(Icons.access_time),
+                  onTap: () async {
+                    final TimeOfDay? pickedTime = await showTimePicker(
+                      context: context,
+                      initialTime: selectedTime,
+                    );
+                    if (pickedTime != null) {
+                      setState(() {
+                        selectedTime = pickedTime;
+                      });
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // Notes field
+                TextField(
+                  controller: notesController,
+                  decoration: const InputDecoration(
+                    labelText: "Notes",
+                    hintText: "Add additional details",
+                  ),
+                  maxLines: 3,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final title = titleController.text.trim();
+                if (title.isNotEmpty) {
+                  setState(() {
+                    // Create normalized day without time component
+                    final normalizedDay = DateTime.utc(_selectedDay!.year,
+                        _selectedDay!.month, _selectedDay!.day);
+
+                    // Create event data
+                    final eventData = {
+                      'title': title,
+                      'category': selectedCategory,
+                      'time': selectedTime.format(context),
+                      'notes': notesController.text.trim(),
+                    };
+
+                    // Add to events map
+                    if (_events.containsKey(normalizedDay)) {
+                      _events[normalizedDay]!.add(eventData);
+                    } else {
+                      _events[normalizedDay] = [eventData];
+                    }
+                  });
+                  Navigator.pop(context);
+                } else {
+                  // Show error if title is empty
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text("Please enter an event title")),
+                  );
+                }
+              },
+              child: const Text("Save"),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final text = controller.text.trim();
-              if (text.isNotEmpty) {
-                setState(() {
-                  _events[_selectedDay!] = [...?_events[_selectedDay!], text];
-                });
-              }
-              Navigator.pop(context);
-            },
-            child: const Text("Save"),
-          ),
-        ],
       ),
     );
   }
 
-  List<String> _getEventsForDay(DateTime day) {
-    return _events[DateTime.utc(day.year, day.month, day.day)] ?? [];
+  // Updated to handle new event data structure
+  List<Map<String, dynamic>> _getEventsForDay(DateTime day) {
+    final normalizedDay = DateTime.utc(day.year, day.month, day.day);
+    return _events[normalizedDay] ?? [];
   }
 
   void _onForecastTap(BuildContext context, String day) {
@@ -88,25 +199,8 @@ class _WeatherPageState extends State<WeatherPage> {
                   const SizedBox(height: 16),
                   _buildComparisonByDay(context),
                   const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () =>
-                              _onDetailTap(context, 'Precipitation Total'),
-                          child: _buildPrecipitationTotal(),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () =>
-                              _onDetailTap(context, 'Temperatures Today'),
-                          child: _buildTemperaturesToday(),
-                        ),
-                      ),
-                    ],
-                  ),
+                  _buildCurrentWeather(),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
@@ -117,59 +211,146 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   Widget _buildCalendarSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text("Harvest & Farm Calendar",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ElevatedButton(
-              onPressed: () => _addEvent(context),
-              child: const Text("Add Event"),
-            ),
-          ],
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF0F2027), Color(0xFF203A43)],
         ),
-        const SizedBox(height: 12),
-        TableCalendar(
-          firstDay: DateTime.utc(2020, 1, 1),
-          lastDay: DateTime.utc(2030, 12, 31),
-          focusedDay: _focusedDay,
-          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-          onDaySelected: (selectedDay, focusedDay) {
-            setState(() {
-              _selectedDay = selectedDay;
-              _focusedDay = focusedDay;
-            });
-          },
-          calendarStyle: const CalendarStyle(
-            todayDecoration: BoxDecoration(
-              color: Colors.green,
-              shape: BoxShape.circle,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Harvest & Farm Calendar",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              ElevatedButton(
+                onPressed: () => _addEvent(context),
+                child: const Text("Add Event"),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          TableCalendar(
+            firstDay: DateTime.utc(2020, 1, 1),
+            lastDay: DateTime.utc(2030, 12, 31),
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+              });
+            },
+            calendarStyle: const CalendarStyle(
+              todayDecoration: BoxDecoration(
+                color: Colors.green,
+                shape: BoxShape.circle,
+              ),
+              selectedDecoration: BoxDecoration(
+                color: Colors.orange,
+                shape: BoxShape.circle,
+              ),
             ),
-            selectedDecoration: BoxDecoration(
-              color: Colors.orange,
-              shape: BoxShape.circle,
+            eventLoader: (day) => _getEventsForDay(day),
+          ),
+          const SizedBox(height: 10),
+
+          // Display events with more details
+          ..._getEventsForDay(_selectedDay ?? _focusedDay).map(
+            (event) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6.0),
+              child: Card(
+                elevation: 2,
+                child: ListTile(
+                  leading: _getCategoryIcon(event['category']),
+                  title: Text(event['title'],
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("${event['category']} at ${event['time']}"),
+                      if (event['notes'].isNotEmpty)
+                        Text(event['notes'],
+                            style:
+                                const TextStyle(fontStyle: FontStyle.italic)),
+                    ],
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () =>
+                        _deleteEvent(_selectedDay ?? _focusedDay, event),
+                  ),
+                  isThreeLine: event['notes'].isNotEmpty,
+                ),
+              ),
             ),
           ),
-          eventLoader: _getEventsForDay,
-        ),
-        const SizedBox(height: 10),
-        ..._getEventsForDay(_selectedDay ?? _focusedDay).map(
-          (event) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
-            child: Row(
-              children: [
-                const Icon(Icons.agriculture, size: 18, color: Colors.green),
-                const SizedBox(width: 8),
-                Text(event, style: const TextStyle(fontSize: 16)),
-              ],
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
+  }
+
+  // Helper method to get appropriate icon for event category
+  Widget _getCategoryIcon(String category) {
+    IconData iconData;
+    Color iconColor;
+
+    switch (category) {
+      case 'Harvest':
+        iconData = Icons.agriculture;
+        iconColor = Colors.orange;
+        break;
+      case 'Planting':
+        iconData = Icons.grass;
+        iconColor = Colors.green;
+        break;
+      case 'Pruning':
+        iconData = Icons.content_cut;
+        iconColor = Colors.blueGrey;
+        break;
+      case 'Fertilizing':
+        iconData = Icons.spa;
+        iconColor = Colors.brown;
+        break;
+      case 'Irrigation':
+        iconData = Icons.water_drop;
+        iconColor = Colors.blue;
+        break;
+      case 'Pest Control':
+        iconData = Icons.bug_report;
+        iconColor = Colors.red;
+        break;
+      default:
+        iconData = Icons.event;
+        iconColor = Colors.purple;
+    }
+
+    return CircleAvatar(
+      backgroundColor: iconColor.withOpacity(0.2),
+      child: Icon(iconData, color: iconColor),
+    );
+  }
+
+  // Method to delete an event
+  void _deleteEvent(DateTime day, Map<String, dynamic> eventToDelete) {
+    setState(() {
+      final normalizedDay = DateTime.utc(day.year, day.month, day.day);
+      if (_events.containsKey(normalizedDay)) {
+        _events[normalizedDay]!.removeWhere((event) =>
+            event['title'] == eventToDelete['title'] &&
+            event['time'] == eventToDelete['time']);
+
+        if (_events[normalizedDay]!.isEmpty) {
+          _events.remove(normalizedDay);
+        }
+      }
+    });
   }
 
   Widget _buildWeeklyWeatherForecast(BuildContext context) {
@@ -211,11 +392,17 @@ class _WeatherPageState extends State<WeatherPage> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFFF8008), Color(0xFFFFC837)],
+        ),
         borderRadius: BorderRadius.circular(16),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        // Removed decoration from Column
         children: [
           const Text("Weekly Weather Forecast for",
               style: TextStyle(
@@ -470,6 +657,106 @@ class _WeatherPageState extends State<WeatherPage> {
           ],
         ),
       ),
+    );
+  }
+
+  // Add the current weather widget method
+  Widget _buildCurrentWeather() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF1E3C72), Color(0xFF2A5298)],
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Current Weather at Your Farm",
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+              if (_isRefreshing)
+                const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
+                children: [
+                  const Icon(Icons.wb_sunny, color: Colors.yellow, size: 50),
+                  const SizedBox(height: 8),
+                  const Text(
+                    "24°C",
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  Text(
+                    "Sunny",
+                    style: TextStyle(fontSize: 16, color: Colors.blue.shade100),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildWeatherDetail(Icons.water_drop, "Humidity: 65%"),
+                  const SizedBox(height: 8),
+                  _buildWeatherDetail(Icons.air, "Wind: 12 km/h"),
+                  const SizedBox(height: 8),
+                  _buildWeatherDetail(Icons.thermostat, "Feels like: 26°C"),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text("Opening detailed weather forecast...")),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.blue.shade800,
+              minimumSize: const Size(double.infinity, 45),
+            ),
+            child: const Text("View Forecast"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWeatherDetail(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.white, size: 16),
+        const SizedBox(width: 8),
+        Text(text, style: const TextStyle(fontSize: 16, color: Colors.white)),
+      ],
     );
   }
 }

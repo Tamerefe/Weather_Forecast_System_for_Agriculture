@@ -5,21 +5,11 @@ import 'pages/dashboard_page.dart';
 import 'pages/crop_page.dart';
 import 'pages/weather_page.dart';
 import 'pages/profile_page.dart';
-import 'package:logger/logger.dart';
-
-// Create a logger instance
-final logger = Logger();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  try {
-    await dotenv.load(fileName: ".env");
-    logger.i("Çevre değişkenleri başarıyla yüklendi");
-  } catch (e) {
-    logger.e("Çevre değişkenleri yüklenemedi: $e");
-    // API anahtarı olmadan devam et, weather service eksik anahtarı ele alacak
-  }
+  await dotenv.load(fileName: ".env");
 
   runApp(const FarmWeatherApp());
 }
