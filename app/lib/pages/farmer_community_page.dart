@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class FarmerCommunityPage extends StatefulWidget {
-  const FarmerCommunityPage({Key? key}) : super(key: key);
+  const FarmerCommunityPage({super.key});
 
   @override
   State<FarmerCommunityPage> createState() => _FarmerCommunityPageState();
@@ -34,8 +34,12 @@ class _FarmerCommunityPageState extends State<FarmerCommunityPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Farmer community"),
+        title: const Text(
+          "Farmer community",
+          style: TextStyle(color: Colors.black),
+        ),
         backgroundColor: Colors.green,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Column(
         children: [
@@ -61,12 +65,16 @@ class _FarmerCommunityPageState extends State<FarmerCommunityPage> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
+                          color: Colors.black,
                         ),
                       ),
                       SizedBox(height: 4),
                       Text(
                         "Diğer çiftçilerle bilgi paylaşın, sorular sorun ve deneyimlerinizi aktarın",
-                        style: TextStyle(fontSize: 14),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
                       ),
                     ],
                   ),
@@ -100,8 +108,10 @@ class _FarmerCommunityPageState extends State<FarmerCommunityPage> {
                 Expanded(
                   child: TextField(
                     controller: _messageController,
+                    style: const TextStyle(color: Colors.black),
                     decoration: const InputDecoration(
                       hintText: "Mesajınızı yazın...",
+                      hintStyle: TextStyle(color: Colors.black54),
                       border: InputBorder.none,
                     ),
                   ),
@@ -154,15 +164,19 @@ class _FarmerCommunityPageState extends State<FarmerCommunityPage> {
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
+                        color: Colors.black,
                       ),
                     ),
                   const SizedBox(height: 4),
-                  Text(message.message),
+                  Text(
+                    message.message,
+                    style: const TextStyle(color: Colors.black),
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     message.time,
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
+                    style: const TextStyle(
+                      color: Colors.black54,
                       fontSize: 11,
                     ),
                   ),
