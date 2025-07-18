@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../services/weather_service.dart';
 import '../widgets/app_header.dart';
+import 'package:logger/logger.dart';
+
+final logger = Logger();
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -46,7 +49,7 @@ class _DashboardPageState extends State<DashboardPage> {
         _wind = "${weather['wind']} km/h";
       });
     } catch (e) {
-      print('Error in _fetchWeather: $e');
+      logger.i('Error in _fetchWeather: $e');
       setState(() {
         _temperature = "Error";
         _humidity = "--";

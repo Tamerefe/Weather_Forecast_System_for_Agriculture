@@ -9,13 +9,7 @@ import 'pages/profile_page.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  try {
-    await dotenv.load(fileName: ".env");
-    print("Çevre değişkenleri başarıyla yüklendi");
-  } catch (e) {
-    print("Çevre değişkenleri yüklenemedi: $e");
-    // API anahtarı olmadan devam et, weather service eksik anahtarı ele alacak
-  }
+  await dotenv.load(fileName: ".env");
 
   runApp(const FarmWeatherApp());
 }
@@ -73,7 +67,8 @@ class _HomePageState extends State<HomePage> {
         type: BottomNavigationBarType.fixed,
         backgroundColor: const Color(0xFF3C2A21),
         selectedItemColor: Colors.green,
-        unselectedItemColor: Colors.orange.withOpacity(0.6),
+        unselectedItemColor:
+            Color.fromRGBO(255, 149, 0, 0.6), // Updated from withOpacity
         elevation: 0,
         selectedFontSize: 12,
         unselectedFontSize: 10,

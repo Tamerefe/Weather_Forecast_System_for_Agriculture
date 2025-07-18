@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../pages/profile_page.dart';
 import '../services/notification_page.dart';
+import '../pages/farmer_community_page.dart'; // Add this import for the community page
 
 class AppHeader extends StatelessWidget {
   final Widget? leading;
@@ -8,16 +9,25 @@ class AppHeader extends StatelessWidget {
   final String? title;
 
   const AppHeader({
-    Key? key,
+    super.key,
     this.leading,
     this.trailing,
     this.title,
-  }) : super(key: key);
+  });
 
-  void _onSearchTap(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Search tapped")),
-    );
+  // Get greeting based on time of day
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+
+    if (hour >= 5 && hour < 12) {
+      return "Good Morning!";
+    } else if (hour >= 12 && hour < 18) {
+      return "Good Afternoon!";
+    } else if (hour >= 18 && hour < 22) {
+      return "Good Evening!";
+    } else {
+      return "Good Night!";
+    }
   }
 
   void _onProfileTap(BuildContext context) {
@@ -34,131 +44,118 @@ class AppHeader extends StatelessWidget {
     );
   }
 
+  // Add navigation to Farmer Community
+  void _onCommunityTap(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const FarmerCommunityPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+      child: Row(
+        children: [
+          // Logo
+          Container(
+            width: 45,
+            height: 45,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Color.fromRGBO(255, 255, 255, 0.9),
+            ),
+            child: Center(
+              child: Image.asset(
+                'assets/logo.png',
+                width: 32,
+                height: 32,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.9),
-                ),
-                child: Center(
-                  child: Image.asset(
-                    'assets/logo.png',
-                    width: 35,
-                    height: 35,
-                    fit: BoxFit.contain,
-                  ),
+              Text(
+                _getGreeting(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
                 ),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => _onSearchTap(context),
-                  child: Container(
-                    height: 45,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: "Search here ...",
-                                border: InputBorder.none,
-                                hintStyle: TextStyle(color: Colors.grey),
-                              ),
-                            ),
-                          ),
-                          Icon(Icons.search, color: Colors.grey),
-                        ],
-                      ),
-                    ),
-                  ),
+              const Text(
+                "Tamer Akipek",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () => _onProfileTap(context),
-                child: const CircleAvatar(
-                  radius: 20,
-                  backgroundImage: AssetImage('assets/profile.png'),
-                ),
+          const Spacer(),
+          // Community button
+          GestureDetector(
+            onTap: () => _onCommunityTap(context),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.green.shade700,
+                borderRadius: BorderRadius.circular(20),
               ),
-              const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.people, color: Colors.white, size: 18),
+                  SizedBox(width: 4),
                   Text(
-                    "Good Morning!",
+                    "Farmer community",
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(
-                    "Tamer Akipek",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
                     ),
                   ),
                 ],
               ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () => _onNotificationTap(context),
-                child: Stack(
-                  children: [
-                    const Icon(Icons.notifications,
-                        color: Colors.green, size: 30),
-                    Positioned(
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        constraints: const BoxConstraints(
-                          minWidth: 16,
-                          minHeight: 16,
-                        ),
-                        child: const Text(
-                          '1',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ],
+          const SizedBox(width: 10),
+          // Notification icon
+          GestureDetector(
+            onTap: () => _onNotificationTap(context),
+            child: Stack(
+              children: [
+                const Icon(Icons.notifications, color: Colors.green, size: 30),
+                Positioned(
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: const Text(
+                      '1',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

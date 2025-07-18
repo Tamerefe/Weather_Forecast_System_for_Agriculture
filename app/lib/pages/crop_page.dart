@@ -114,7 +114,7 @@ class _CropPageState extends State<CropPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Color.fromRGBO(0, 0, 0, 0.2),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -154,7 +154,7 @@ class _CropPageState extends State<CropPage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Color.fromRGBO(255, 255, 255, 0.2),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Row(
@@ -218,7 +218,7 @@ class _CropPageState extends State<CropPage> {
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Color.fromRGBO(255, 255, 255, 0.05),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.white10),
           ),
@@ -268,8 +268,8 @@ class _CropPageState extends State<CropPage> {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(4),
-      splashColor: color.withOpacity(0.1),
-      highlightColor: color.withOpacity(0.05),
+      splashColor: color.withAlpha((0.1 * 255).round()),
+      highlightColor: color.withAlpha((0.05 * 255).round()),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
@@ -278,7 +278,7 @@ class _CropPageState extends State<CropPage> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
+                color: color.withAlpha((0.15 * 255).round()),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 24),
@@ -301,7 +301,7 @@ class _CropPageState extends State<CropPage> {
                     description,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white.withOpacity(0.7),
+                      color: const Color.fromRGBO(255, 255, 255, 0.7),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -412,7 +412,7 @@ class _CropPageState extends State<CropPage> {
                 max: 100,
                 divisions: 10,
                 activeColor: Colors.blue,
-                inactiveColor: Colors.blue.withOpacity(0.2),
+                inactiveColor: Colors.blue.withAlpha((0.2 * 255).round()),
                 label: '${irrigationReduction.toInt()}%',
                 onChanged: (value) {
                   setState(() {
@@ -476,7 +476,7 @@ class _CropPageState extends State<CropPage> {
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) => Container(
                 height: 150,
-                color: Colors.green.withOpacity(0.2),
+                color: Colors.green.withAlpha((0.2 * 255).round()),
                 child: Center(
                     child:
                         Icon(Icons.image_not_supported, color: Colors.green)),
@@ -744,15 +744,15 @@ class _CropPageState extends State<CropPage> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              color.withOpacity(0.2),
-              color.withOpacity(0.05),
+              color.withAlpha((0.2 * 255).round()),
+              color.withAlpha((0.05 * 255).round()),
             ],
           ),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.2)),
+          border: Border.all(color: color.withAlpha((0.2 * 255).round())),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.1),
+              color: color.withAlpha((0.1 * 255).round()),
               blurRadius: 5,
               offset: const Offset(0, 3),
             ),
@@ -764,7 +764,7 @@ class _CropPageState extends State<CropPage> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
+                color: color.withAlpha((0.2 * 255).round()),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 32),
@@ -785,7 +785,7 @@ class _CropPageState extends State<CropPage> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withAlpha((0.7 * 255).round()),
               ),
             ),
           ],
@@ -891,9 +891,10 @@ class _CropPageState extends State<CropPage> {
         Container(
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.1),
+            color: Colors.blue.withAlpha((0.1 * 255).round()),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.blue.withOpacity(0.3)),
+            border:
+                Border.all(color: Colors.blue.withAlpha((0.3 * 255).round())),
           ),
           child: Row(
             children: [
@@ -923,9 +924,10 @@ class _CropPageState extends State<CropPage> {
           // Removed fixed height to allow dynamic content sizing
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.amber.withOpacity(0.1),
+            color: Colors.amber.withAlpha((0.1 * 255).round()),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.amber.withOpacity(0.3)),
+            border:
+                Border.all(color: Colors.amber.withAlpha((0.3 * 255).round())),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min, // Added to adapt to content
@@ -1001,7 +1003,7 @@ class _CropPageState extends State<CropPage> {
         Container(
           height: 80,
           decoration: BoxDecoration(
-            color: Colors.green.withOpacity(0.1),
+            color: Colors.green.withAlpha((0.1 * 255).round()),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
@@ -1093,9 +1095,10 @@ class _CropPageState extends State<CropPage> {
           height: 150,
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.purple.withOpacity(0.1),
+            color: Colors.purple.withAlpha((0.1 * 255).round()),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.purple.withOpacity(0.3)),
+            border:
+                Border.all(color: Colors.purple.withAlpha((0.3 * 255).round())),
           ),
           child: Column(
             children: [
@@ -1309,7 +1312,7 @@ class _CropPageState extends State<CropPage> {
       width: 160,
       margin: const EdgeInsets.only(right: 16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Color.fromRGBO(255, 255, 255, 0.05),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white10),
       ),
@@ -1320,18 +1323,18 @@ class _CropPageState extends State<CropPage> {
             height: 100,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.15),
+              color: Colors.green.withAlpha((0.15 * 255).round()),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
               ),
             ),
+            alignment: Alignment.center,
             child: Icon(
               icon,
               size: 50,
               color: Colors.green.shade300,
             ),
-            alignment: Alignment.center,
           ),
           Padding(
             padding: const EdgeInsets.all(12),
@@ -1385,8 +1388,8 @@ class _CropPageState extends State<CropPage> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.grey.shade800.withOpacity(0.6),
-            Colors.grey.shade900.withOpacity(0.6)
+            Colors.grey.shade800.withAlpha((0.6 * 255).round()),
+            Colors.grey.shade900.withAlpha((0.6 * 255).round())
           ],
         ),
         borderRadius: BorderRadius.circular(20),
@@ -1444,7 +1447,7 @@ class _CropPageState extends State<CropPage> {
           title,
           style: TextStyle(
             fontSize: 12,
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withAlpha((0.7 * 255).round()),
           ),
         ),
         const SizedBox(height: 6),
@@ -1482,7 +1485,7 @@ class _CropStatItem extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
+            color: Color.fromRGBO(255, 255, 255, 0.15),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
@@ -1499,7 +1502,7 @@ class _CropStatItem extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12,
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withAlpha((0.7 * 255).round()),
           ),
         ),
       ],

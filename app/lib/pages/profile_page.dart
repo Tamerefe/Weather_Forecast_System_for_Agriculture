@@ -71,6 +71,9 @@ class _ProfilePageState extends State<ProfilePage>
     setState(() => _isRefreshing = true);
     // Simulate network request
     await Future.delayed(const Duration(seconds: 2));
+
+    if (!mounted) return; // Add mounted check after async gap
+
     setState(() => _isRefreshing = false);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Profile updated!")),
@@ -111,10 +114,6 @@ class _ProfilePageState extends State<ProfilePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Profile"),
-        backgroundColor: Colors.green,
-      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -135,8 +134,6 @@ class _ProfilePageState extends State<ProfilePage>
                       _buildSettings(context),
                       const SizedBox(height: 20),
                       _buildStatistics(),
-                      const SizedBox(height: 20),
-                      _buildWeatherWidget(),
                     ],
                   ),
                 ),
@@ -334,8 +331,8 @@ class _ProfilePageState extends State<ProfilePage>
     return InkWell(
       onTap: () => _onSettingTap(context, text),
       borderRadius: BorderRadius.circular(8),
-      splashColor: Colors.green.withOpacity(0.3),
-      highlightColor: Colors.green.withOpacity(0.1),
+      splashColor: Color.fromARGB(77, 76, 175, 80), // 30% opacity green
+      highlightColor: Color.fromARGB(26, 76, 175, 80), // 10% opacity green
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
@@ -413,7 +410,7 @@ class _ProfilePageState extends State<ProfilePage>
     return InkWell(
       onTap: () => _showStatDetail(label, value),
       borderRadius: BorderRadius.circular(8),
-      splashColor: Colors.green.withOpacity(0.3),
+      splashColor: Color.fromARGB(77, 76, 175, 80), // 30% opacity green
       child: Column(
         children: [
           Text(value,
@@ -444,101 +441,6 @@ class _ProfilePageState extends State<ProfilePage>
               style: TextStyle(fontSize: 14, color: Colors.grey.shade400)),
         ],
       ),
-    );
-  }
-
-  Widget _buildWeatherWidget() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.blue.shade800,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                "Current Weather at Your Farm",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-              if (_isRefreshing)
-                const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                children: [
-                  const Icon(Icons.wb_sunny, color: Colors.yellow, size: 50),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "24°C",
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                  Text(
-                    "Sunny",
-                    style: TextStyle(fontSize: 16, color: Colors.blue.shade100),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildWeatherDetail(Icons.water_drop, "Humidity: 65%"),
-                  const SizedBox(height: 8),
-                  _buildWeatherDetail(Icons.air, "Wind: 12 km/h"),
-                  const SizedBox(height: 8),
-                  _buildWeatherDetail(Icons.thermostat, "Feels like: 26°C"),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text("Opening detailed weather forecast...")),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.blue.shade800,
-              minimumSize: const Size(double.infinity, 45),
-            ),
-            child: const Text("View Forecast"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWeatherDetail(IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(icon, color: Colors.white, size: 16),
-        const SizedBox(width: 8),
-        Text(text, style: const TextStyle(fontSize: 16, color: Colors.white)),
-      ],
     );
   }
 }
